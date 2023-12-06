@@ -8,22 +8,19 @@
 import ComposableArchitecture
 import SwiftUI
 
-import ComposableArchitecture
-import SwiftUI
-
 @main
 struct DaySetApp: App {
-  var body: some Scene {
-    WindowGroup {
-      NavigationStack {
-        EventListView(
-          store: Store(
-            initialState: EventListFeature.State()
-          ) {
-              EventListFeature()
-          }
-        )
-      }
+    var body: some Scene {
+        WindowGroup {
+            NavigationStack {
+                EventListView(
+                    store: Store(
+                        initialState: EventListFeature.State()
+                    ) {
+                        EventListFeature()
+                    }
+                )
+            }
+        }
     }
-  }
 }
