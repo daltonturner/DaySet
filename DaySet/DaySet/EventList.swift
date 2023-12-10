@@ -6,24 +6,28 @@
 //
 
 import ComposableArchitecture
+import Foundation
 import SwiftUI
 
 struct EventListFeature: Reducer {
 
     struct State: Equatable {
         @PresentationState var addEvent: EventFormFeature.State?
+        @BindingState var arrivalTime: Date = .now
         var events: IdentifiedArrayOf<Event> = []
     }
 
-    enum Action {
+    enum Action : BindableAction {
         case addButtonTapped
         case addEvent(PresentationAction<EventFormFeature.Action>)
+        case binding(BindingAction<State>)
         case cancelEventButtonTapped
         case saveEventButtonTapped
     }
 
     @Dependency(\.uuid) var uuid
     var body: some ReducerOf<Self> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
             case .addButtonTapped:
@@ -34,6 +38,8 @@ struct EventListFeature: Reducer {
                 )
                 return .none
             case .addEvent:
+                return .none
+            case .binding(_):
                 return .none
             case .cancelEventButtonTapped:
                 state.addEvent = nil
@@ -56,11 +62,28 @@ struct EventListView: View {
     let store: StoreOf<EventListFeature>
 
     var body: some View {
-        WithViewStore(self.store, observe: \.events) { viewStore in
+        WithViewStore(self.store, observe: { $0 }) { viewStore in
             VStack {
+                DatePicker(
+                    "Time",
+                    selection: viewStore.$arrivalTime,
+                    displayedComponents: [.hourAndMinute]
+                )
+                .labelsHidden()
+                .scaleEffect(1.5)
+                .padding()
                 List {
-                    ForEach(viewStore.state) { standup in
+                    ForEach(viewStore.state.events) { standup in
                         CardView(event: standup)
+                    }
+                    Section {
+                        HStack {
+                            Text("Total")
+                                .foregroundColor(.primary)
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text(formatDuration(totalDuration(of: viewStore.events)))
+                        }
                     }
                 }
                 .navigationTitle("DaySet")
@@ -96,6 +119,22 @@ struct EventListView: View {
             }
             }
         }
+    }
+}
+
+private extension EventListView {
+    func totalDuration(of events: IdentifiedArrayOf<Event>) -> Duration {
+        return events.reduce(Duration.seconds(0)) { total, event in
+            total + event.duration
+        }
+    }
+
+    // Function to format Duration to String
+    func formatDuration(_ duration: Duration) -> String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.unitsStyle = .abbreviated
+        return formatter.string(from: DateComponents(second: Int(duration.components.seconds))) ?? ""
     }
 }
 
@@ -136,6 +175,7 @@ extension LabelStyle where Self == TrailingIconLabelStyle {
             EventListView(
                 store: Store(
                     initialState: EventListFeature.State(
+                        arrivalTime: .now,
                         events: [.mock]
                     )
                 ) {
