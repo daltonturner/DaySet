@@ -9,6 +9,7 @@ import ComposableArchitecture
 import XCTest
 @testable import DaySet
 
+// TODO: - Extract Store creation to a Factory
 @MainActor
 final class EventListTests: XCTestCase {
     func testAddEvent() async {

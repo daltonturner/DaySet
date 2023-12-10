@@ -17,7 +17,7 @@ struct EventFormFeature: Reducer {
         enum Field: Hashable {
             case title
         }
-        
+
         init(focus: Field? = .title, event: Event) {
             self.focus = focus
             self.event = event
