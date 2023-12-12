@@ -67,13 +67,6 @@ struct EventFormView: View {
     }
 }
 
-extension Duration {
-    fileprivate var minutes: Double {
-        get { Double(self.components.seconds / 60) }
-        set { self = .seconds(newValue * 60) }
-    }
-}
-
 #Preview {
     MainActor.assumeIsolated {
         NavigationStack {

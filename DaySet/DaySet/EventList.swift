@@ -129,44 +129,12 @@ private extension EventListView {
         }
     }
 
-    // Function to format Duration to String
     func formatDuration(_ duration: Duration) -> String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
         formatter.unitsStyle = .abbreviated
-        return formatter.string(from: DateComponents(second: Int(duration.components.seconds))) ?? ""
+        return formatter.string(from: DateComponents(second: Int(duration.seconds))) ?? ""
     }
-}
-
-struct CardView: View {
-    let event: Event
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(self.event.title)
-                .font(.headline)
-            Spacer()
-            HStack {
-                Label(self.event.duration.formatted(.units()), systemImage: "clock")
-                    .labelStyle(.trailingIcon)
-            }
-            .font(.caption)
-        }
-        .padding()
-    }
-}
-
-struct TrailingIconLabelStyle: LabelStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack {
-            configuration.title
-            configuration.icon
-        }
-    }
-}
-
-extension LabelStyle where Self == TrailingIconLabelStyle {
-    static var trailingIcon: Self { Self() }
 }
 
 #Preview {

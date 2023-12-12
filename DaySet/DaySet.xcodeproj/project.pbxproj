@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		256477A02B282B8B00071921 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2564779F2B282B8B00071921 /* CardView.swift */; };
+		256477A32B282C6F00071921 /* Duration+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256477A22B282C6F00071921 /* Duration+Extensions.swift */; };
 		258A7AD92B1EE5A300932112 /* DaySetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258A7AD82B1EE5A300932112 /* DaySetApp.swift */; };
 		258A7ADB2B1EE5A300932112 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258A7ADA2B1EE5A300932112 /* ContentView.swift */; };
 		258A7ADD2B1EE5A300932112 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 258A7ADC2B1EE5A300932112 /* Assets.xcassets */; };
@@ -38,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2564779F2B282B8B00071921 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		256477A22B282C6F00071921 /* Duration+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Duration+Extensions.swift"; sourceTree = "<group>"; };
 		258A7AD52B1EE5A300932112 /* DaySet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaySet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		258A7AD82B1EE5A300932112 /* DaySetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySetApp.swift; sourceTree = "<group>"; };
 		258A7ADA2B1EE5A300932112 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -79,6 +83,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		256477A12B282C3C00071921 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				256477A22B282C6F00071921 /* Duration+Extensions.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		258A7ACC2B1EE5A300932112 = {
 			isa = PBXGroup;
 			children = (
@@ -102,6 +114,7 @@
 		258A7AD72B1EE5A300932112 /* DaySet */ = {
 			isa = PBXGroup;
 			children = (
+				256477A12B282C3C00071921 /* Helpers */,
 				258A7AD82B1EE5A300932112 /* DaySetApp.swift */,
 				258A7ADA2B1EE5A300932112 /* ContentView.swift */,
 				258A7ADC2B1EE5A300932112 /* Assets.xcassets */,
@@ -109,6 +122,7 @@
 				258A7B022B1EE5F300932112 /* Models.swift */,
 				258A7B042B1EE60E00932112 /* EventList.swift */,
 				258A7B062B1EE63100932112 /* EventForm.swift */,
+				2564779F2B282B8B00071921 /* CardView.swift */,
 			);
 			path = DaySet;
 			sourceTree = "<group>";
@@ -275,9 +289,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				258A7B052B1EE60E00932112 /* EventList.swift in Sources */,
+				256477A32B282C6F00071921 /* Duration+Extensions.swift in Sources */,
 				258A7B072B1EE63100932112 /* EventForm.swift in Sources */,
 				258A7B032B1EE5F300932112 /* Models.swift in Sources */,
 				258A7ADB2B1EE5A300932112 /* ContentView.swift in Sources */,
+				256477A02B282B8B00071921 /* CardView.swift in Sources */,
 				258A7AD92B1EE5A300932112 /* DaySetApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

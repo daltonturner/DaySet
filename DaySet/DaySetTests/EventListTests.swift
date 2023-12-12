@@ -54,7 +54,7 @@ final class EventListTests: XCTestCase {
             $0.uuid = .incrementing
         }
 
-        var event = Event(
+        let event = Event(
             id: UUID(0)
         )
 
