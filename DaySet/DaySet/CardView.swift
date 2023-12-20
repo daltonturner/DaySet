@@ -13,7 +13,6 @@ struct CardView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(self.event.title)
-                .font(.headline)
             Spacer()
             HStack {
                 Label(self.event.duration.formatted(.units()), systemImage: "clock")

@@ -64,25 +64,35 @@ struct EventListView: View {
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             VStack {
-                DatePicker(
-                    "Time",
-                    selection: viewStore.$arrivalTime,
-                    displayedComponents: [.hourAndMinute]
-                )
-                .labelsHidden()
-                .scaleEffect(1.5)
-                .padding()
+                HStack {
+                    Text("Arrive by")
+                    DatePicker(
+                        "Time",
+                        selection: viewStore.$arrivalTime,
+                        displayedComponents: [.hourAndMinute]
+                    )
+                    .labelsHidden()
+                    .scaleEffect(1.25)
+                    .padding()
+                }
                 List {
-                    ForEach(viewStore.state.events) { standup in
-                        CardView(event: standup)
-                    }
-                    Section {
-                        HStack {
-                            Text("Total")
-                                .foregroundColor(.primary)
-                                .fontWeight(.bold)
-                            Spacer()
-                            Text(formatDuration(totalDuration(of: viewStore.events)))
+                    if !viewStore.state.events.isEmpty {
+                        Section {
+                            HStack {
+                                Text("Prepare by")
+                                Spacer()
+                                Text("\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.events)))")
+                            }
+                        }
+                        ForEach(viewStore.state.events) { event in
+                            CardView(event: event)
+                        }
+                        Section {
+                            HStack {
+                                Text("Total")
+                                Spacer()
+                                Text(formatDuration(totalDuration(of: viewStore.events)))
+                            }
                         }
                     }
                 }
@@ -131,9 +141,21 @@ private extension EventListView {
 
     func formatDuration(_ duration: Duration) -> String {
         let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.allowedUnits = [.hour, .minute]
         formatter.unitsStyle = .abbreviated
         return formatter.string(from: DateComponents(second: Int(duration.seconds))) ?? ""
+    }
+
+    func calculatePrepareByTime(arrivalTime: Date, events: IdentifiedArrayOf<Event>) -> Date {
+        let totalDurationInSeconds = totalDuration(of: events).seconds
+        let prepareByTime = Calendar.current.date(byAdding: .second, value: -Int(totalDurationInSeconds), to: arrivalTime)
+        return prepareByTime ?? arrivalTime
+    }
+
+    func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 }
 
