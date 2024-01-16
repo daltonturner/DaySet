@@ -11,14 +11,14 @@ struct CardView: View {
     let event: Event
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(self.event.title)
+        HStack {
+            Text(event.title)
             Spacer()
             HStack {
-                Label(self.event.duration.formatted(.units()), systemImage: "clock")
+                Label(event.duration.formatted(.units()), systemImage: "clock")
                     .labelStyle(.trailingIcon)
             }
-            .font(.caption)
+            .font(.callout)
         }
         .padding()
     }
@@ -35,4 +35,12 @@ struct TrailingIconLabelStyle: LabelStyle {
 
 extension LabelStyle where Self == TrailingIconLabelStyle {
     static var trailingIcon: Self { Self() }
+}
+
+#Preview {
+    List {
+        CardView(event: .mock)
+        CardView(event: .mock)
+        CardView(event: .mock)
+    }
 }

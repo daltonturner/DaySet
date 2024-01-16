@@ -26,6 +26,7 @@ struct EventListFeature: Reducer {
     }
 
     @Dependency(\.uuid) var uuid
+
     var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce { state, action in
@@ -64,26 +65,83 @@ struct EventListView: View {
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             VStack {
-                HStack {
-                    Text("Arrive by")
-                    DatePicker(
-                        "Time",
-                        selection: viewStore.$arrivalTime,
-                        displayedComponents: [.hourAndMinute]
-                    )
-                    .labelsHidden()
-                    .scaleEffect(1.25)
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("DaySet")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        Spacer()
+                        Button {
+                            viewStore.send(.addButtonTapped)
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                    }
+                    .sheet(
+                        store: self.store.scope(
+                            state: \.$addEvent,
+                            action: { .addEvent($0) }
+                        )
+                    ) { store in
+                        NavigationStack {
+                            EventFormView(store: store)
+                                .navigationTitle("New Event")
+                                .toolbar {
+                                    ToolbarItem {
+                                        Button("Save") {
+                                            viewStore.send(.saveEventButtonTapped)
+                                        }
+                                    }
+                                    ToolbarItem(placement: .cancellationAction) {
+                                        Button("Cancel") {
+                                            viewStore.send(.cancelEventButtonTapped)
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                    VStack {
+                        DatePicker(
+                            "Time",
+                            selection: viewStore.$arrivalTime,
+                            displayedComponents: [.hourAndMinute]
+                        )
+                        .scaleEffect(1.25)
+                        .labelsHidden()
+
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Arrive by")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Text("\(formatTime(viewStore.arrivalTime))")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                            }
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
+                            .background(Color(uiColor: .systemGray6))
+                            .cornerRadius(10)
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Prepare by")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Text("\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.events)))")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                            }
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
+                            .background(Color(uiColor: .systemGray6))
+                            .cornerRadius(10)
+                        }
+                    }
                     .padding()
                 }
+                .padding(.horizontal)
                 List {
                     if !viewStore.state.events.isEmpty {
-                        Section {
-                            HStack {
-                                Text("Prepare by")
-                                Spacer()
-                                Text("\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.events)))")
-                            }
-                        }
                         ForEach(viewStore.state.events) { event in
                             CardView(event: event)
                         }
@@ -96,37 +154,18 @@ struct EventListView: View {
                         }
                     }
                 }
-                .navigationTitle("DaySet")
                 .toolbar {
-                    ToolbarItem {
-                        Button("Add") {
-                            viewStore.send(.addButtonTapped)
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button { } label: {
+                            Image(systemName: "line.horizontal.3")
+                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button { } label: {
+                            Image(systemName: "gearshape")
                         }
                     }
                 }
-                .sheet(
-                    store: self.store.scope(
-                        state: \.$addEvent,
-                        action: { .addEvent($0) }
-                    )
-                ) { store in
-                    NavigationStack {
-                        EventFormView(store: store)
-                            .navigationTitle("New Event")
-                            .toolbar {
-                                ToolbarItem {
-                                    Button("Save") {
-                                        viewStore.send(.saveEventButtonTapped)
-                                    }
-                                }
-                                ToolbarItem(placement: .cancellationAction) {
-                                    Button("Cancel") {
-                                        viewStore.send(.cancelEventButtonTapped)
-                                    }
-                                }
-                            }
-                    }
-            }
             }
         }
     }
