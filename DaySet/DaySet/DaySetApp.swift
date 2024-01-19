@@ -13,11 +13,11 @@ struct DaySetApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                EventListView(
+                ListHomeView(
                     store: Store(
-                        initialState: EventListFeature.State()
+                        initialState: ListHomeFeature.State()
                     ) {
-                        EventListFeature()
+                        ListHomeFeature()
                     }
                 )
             }

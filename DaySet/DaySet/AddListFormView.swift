@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct AddListFeature: Reducer {
+struct AddListFormFeature: Reducer {
 
     struct State: Equatable {
         @BindingState var eventList: EventList
@@ -31,8 +31,8 @@ struct AddListFeature: Reducer {
     }
 }
 
-struct AddListView: View {
-    let store: StoreOf<AddListFeature>
+struct AddListFormView: View {
+    let store: StoreOf<AddListFormFeature>
 
     let colors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .pink, .brown, .white, .gray, .black, .mint]
     let icons: [String] = ["list.bullet", "bookmark.fill", "mappin", "gift.fill", "birthday.cake.fill", "book", "calendar", "person", "gear", "house", "cart", "phone"]
@@ -133,10 +133,10 @@ struct TileView<Content: View>: View {
 }
 
 #Preview {
-    AddListView(
+    AddListFormView(
         store: Store(
-            initialState: AddListFeature.State(eventList: .mock)) {
-                AddListFeature()
+            initialState: AddListFormFeature.State(eventList: .mock)) {
+                AddListFormFeature()
             }
     )
 }
