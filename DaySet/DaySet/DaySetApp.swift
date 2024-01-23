@@ -12,15 +12,14 @@ import SwiftUI
 struct DaySetApp: App {
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                ListHomeView(
-                    store: Store(
-                        initialState: ListHomeFeature.State()
-                    ) {
-                        ListHomeFeature()
-                    }
-                )
-            }
+            AppView(
+                store: .init(
+                    initialState: AppFeature.State()
+                ) {
+                    AppFeature()
+                        ._printChanges()
+                }
+            )
         }
     }
 }
