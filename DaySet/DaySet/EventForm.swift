@@ -40,7 +40,6 @@ struct EventFormFeature: Reducer {
     }
 }
 
-// TODO: - Extract Strings
 struct EventFormView: View {
     let store: StoreOf<EventFormFeature>
     @FocusState var focus: EventFormFeature.State.Field?

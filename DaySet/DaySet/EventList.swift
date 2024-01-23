@@ -154,18 +154,6 @@ struct EventListView: View {
                         }
                     }
                 }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button { } label: {
-                            Image(systemName: "line.horizontal.3")
-                        }
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button { } label: {
-                            Image(systemName: "gearshape")
-                        }
-                    }
-                }
             }
         }
     }

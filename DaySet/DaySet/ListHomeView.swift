@@ -61,7 +61,7 @@ struct ListHomeView: View {
             VStack {
                 VStack(spacing: 16) {
                     HStack {
-                        Text("Lists")
+                        Text("DaySet")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                         Spacer()
@@ -99,21 +99,37 @@ struct ListHomeView: View {
                 List {
                     if !viewStore.state.lists.isEmpty {
                         ForEach(viewStore.state.lists) { list in
-                            HStack {
-                                ZStack {
-                                    Circle()
-                                        .fill(list.color)
-                                        .frame(height: 40)
-                                        .padding()
-                                    Image(systemName: list.icon)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.white)
-                                        .padding()
+                            NavigationLink(
+                                state: AppFeature.Path.State.eventList(EventListFeature.State(events: list.events))
+                            ) {
+                                HStack {
+                                    ZStack {
+                                        Circle()
+                                            .fill(list.color)
+                                            .frame(height: 40)
+                                            .padding()
+                                        Image(systemName: list.icon)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.white)
+                                            .padding()
+                                    }
+                                    Text(list.name)
                                 }
-                                Text(list.name)
                             }
+                        }
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button { } label: {
+                            Image(systemName: "line.horizontal.3")
+                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button { } label: {
+                            Image(systemName: "gearshape")
                         }
                     }
                 }
