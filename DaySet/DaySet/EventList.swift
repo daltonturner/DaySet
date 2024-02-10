@@ -22,6 +22,7 @@ struct EventListFeature: Reducer {
         case addEvent(PresentationAction<EventFormFeature.Action>)
         case binding(BindingAction<State>)
         case cancelEventButtonTapped
+        case deleteEvent(indices: IndexSet)
         case saveEventButtonTapped
     }
 
@@ -45,6 +46,9 @@ struct EventListFeature: Reducer {
             case .cancelEventButtonTapped:
                 state.addEvent = nil
                 return .none
+            case .deleteEvent(let indices):
+                state.events.remove(atOffsets: indices)
+                return .none
             case .saveEventButtonTapped:
                 guard let event = state.addEvent?.event else { return .none }
                 state.events.append(event)
@@ -58,7 +62,6 @@ struct EventListFeature: Reducer {
     }
 }
 
-// TODO: - Extract Strings
 struct EventListView: View {
     let store: StoreOf<EventListFeature>
 
@@ -67,9 +70,6 @@ struct EventListView: View {
             VStack {
                 VStack(spacing: 16) {
                     HStack {
-                        Text("DaySet")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
                         Spacer()
                         Button {
                             viewStore.send(.addButtonTapped)
@@ -100,56 +100,49 @@ struct EventListView: View {
                                 }
                         }
                     }
-                    VStack {
-                        DatePicker(
-                            "Time",
-                            selection: viewStore.$arrivalTime,
-                            displayedComponents: [.hourAndMinute]
-                        )
-                        .scaleEffect(1.25)
-                        .labelsHidden()
-
-                        HStack {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Arrive by")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Text("\(formatTime(viewStore.arrivalTime))")
-                                    .font(.title2)
-                                    .fontWeight(.semibold)
+                    .padding(.horizontal)
+                    if viewStore.state.events.isEmpty {
+                        EmptyEventListView()
+                    } else {
+                        VStack(spacing: 18) {
+                            DatePicker(
+                                "Time",
+                                selection: viewStore.$arrivalTime,
+                                displayedComponents: [.hourAndMinute]
+                            )
+                            .scaleEffect(1.25)
+                            .labelsHidden()
+                            
+                            HStack(spacing: 18) {
+                                TimeCardView(
+                                    cardTitle: "Arrive by",
+                                    cardTime: "\(formatTime(viewStore.arrivalTime))"
+                                )
+                                
+                                TimeCardView(
+                                    cardTitle: "Get ready",
+                                    cardTime: "\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.events)))"
+                                )
                             }
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                            .background(Color(uiColor: .systemGray6))
-                            .cornerRadius(10)
-
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Prepare by")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Text("\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.events)))")
-                                    .font(.title2)
-                                    .fontWeight(.semibold)
-                            }
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                            .background(Color(uiColor: .systemGray6))
-                            .cornerRadius(10)
                         }
+                        .padding()
                     }
-                    .padding()
-                }
-                .padding(.horizontal)
-                List {
-                    if !viewStore.state.events.isEmpty {
-                        ForEach(viewStore.state.events) { event in
-                            CardView(event: event)
-                        }
-                        Section {
-                            HStack {
-                                Text("Total")
-                                Spacer()
-                                Text(formatDuration(totalDuration(of: viewStore.events)))
+                    List {
+                        if !viewStore.state.events.isEmpty {
+                            ForEach(viewStore.state.events) { event in
+                                EventListItemView(
+                                    title: "\(event.title)",
+                                    duration: "\(event.duration.formatted(.units()))"
+                                )
+                            }
+                            .onDelete { indices in
+                                viewStore.send(.deleteEvent(indices: indices))
+                            }
+                            Section {
+                                EventListItemView(
+                                    title: "Total",
+                                    duration: "\(totalDuration(of: viewStore.events).formatted(.units()))"
+                                )
                             }
                         }
                     }
@@ -173,9 +166,16 @@ private extension EventListView {
         return formatter.string(from: DateComponents(second: Int(duration.seconds))) ?? ""
     }
 
-    func calculatePrepareByTime(arrivalTime: Date, events: IdentifiedArrayOf<Event>) -> Date {
+    func calculatePrepareByTime(
+        arrivalTime: Date,
+        events: IdentifiedArrayOf<Event>
+    ) -> Date {
         let totalDurationInSeconds = totalDuration(of: events).seconds
-        let prepareByTime = Calendar.current.date(byAdding: .second, value: -Int(totalDurationInSeconds), to: arrivalTime)
+        let prepareByTime = Calendar.current.date(
+            byAdding: .second,
+            value: -Int(totalDurationInSeconds),
+            to: arrivalTime
+        )
         return prepareByTime ?? arrivalTime
     }
 
