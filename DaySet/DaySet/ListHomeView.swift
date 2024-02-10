@@ -20,6 +20,7 @@ struct ListHomeFeature: Reducer {
         case addButtonTapped
         case addList(PresentationAction<AddListFormFeature.Action>)
         case cancelListButtonTapped
+        case deleteList(indices: IndexSet)
         case saveListButtonTapped
     }
 
@@ -39,6 +40,9 @@ struct ListHomeFeature: Reducer {
                 return .none
             case .cancelListButtonTapped:
                 state.addList = nil
+                return .none
+            case .deleteList(let indices):
+                state.lists.remove(atOffsets: indices)
                 return .none
             case .saveListButtonTapped:
                 guard let list = state.addList?.eventList else { return .none }
@@ -119,14 +123,12 @@ struct ListHomeView: View {
                                 }
                             }
                         }
+                        .onDelete { indices in
+                            viewStore.send(.deleteList(indices: indices))
+                        }
                     }
                 }
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button { } label: {
-                            Image(systemName: "line.horizontal.3")
-                        }
-                    }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button { } label: {
                             Image(systemName: "gearshape")
