@@ -23,7 +23,7 @@ struct TimeCardView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(Color(uiColor: .systemGray6))
+        .background(Color(uiColor: .secondarySystemBackground))
         .cornerRadius(10)
     }
 }

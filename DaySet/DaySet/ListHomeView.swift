@@ -12,13 +12,13 @@ import SwiftUI
 struct ListHomeFeature: Reducer {
 
     struct State: Equatable {
-        @PresentationState var addList: AddListFormFeature.State?
+        @PresentationState var addList: CreateListFormFeature.State?
         var lists: IdentifiedArrayOf<EventList> = []
     }
 
     enum Action {
         case addButtonTapped
-        case addList(PresentationAction<AddListFormFeature.Action>)
+        case addList(PresentationAction<CreateListFormFeature.Action>)
         case cancelListButtonTapped
         case deleteList(indices: IndexSet)
         case saveListButtonTapped
@@ -30,7 +30,7 @@ struct ListHomeFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .addButtonTapped:
-                state.addList = AddListFormFeature.State(
+                state.addList = CreateListFormFeature.State(
                     eventList: EventList(
                         id: self.uuid()
                     )
@@ -52,7 +52,7 @@ struct ListHomeFeature: Reducer {
             }
         }
         .ifLet(\.$addList, action: /Action.addList) {
-            AddListFormFeature()
+            CreateListFormFeature()
         }
     }
 }
@@ -82,8 +82,9 @@ struct ListHomeView: View {
                         )
                     ) { store in
                         NavigationStack {
-                            AddListFormView(store: store)
+                            CreateListFormView(store: store)
                                 .navigationTitle("New List")
+                                .navigationBarTitleDisplayMode(.inline)
                                 .toolbar {
                                     ToolbarItem {
                                         Button("Save") {
