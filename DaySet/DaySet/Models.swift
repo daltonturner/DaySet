@@ -12,7 +12,7 @@ struct EventList: Equatable, Identifiable, Codable {
     let id: UUID
     var color = Color.red
     var events: IdentifiedArrayOf<Event> = []
-    var icon = "sun.min"
+    var icon = "list.bullet"
     var name = ""
 }
 
@@ -26,7 +26,7 @@ extension EventList {
 
 struct Event: Equatable, Identifiable, Codable {
     let id: UUID
-    var duration = Duration.seconds(60 * 5)
+    var duration = Duration.seconds(60)
     var title = ""
 }
 

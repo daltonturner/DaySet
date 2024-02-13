@@ -86,6 +86,7 @@ struct EventListView: View {
                         NavigationStack {
                             EventFormView(store: store)
                                 .navigationTitle("New Event")
+                                .navigationBarTitleDisplayMode(.inline)
                                 .toolbar {
                                     ToolbarItem {
                                         Button("Save") {
@@ -101,9 +102,7 @@ struct EventListView: View {
                         }
                     }
                     .padding(.horizontal)
-                    if viewStore.state.events.isEmpty {
-                        EmptyEventListView()
-                    } else {
+                    if !viewStore.state.events.isEmpty {
                         VStack(spacing: 18) {
                             DatePicker(
                                 "Time",
@@ -112,13 +111,13 @@ struct EventListView: View {
                             )
                             .scaleEffect(1.25)
                             .labelsHidden()
-                            
+
                             HStack(spacing: 18) {
                                 TimeCardView(
                                     cardTitle: "Arrive by",
                                     cardTime: "\(formatTime(viewStore.arrivalTime))"
                                 )
-                                
+
                                 TimeCardView(
                                     cardTitle: "Get ready",
                                     cardTime: "\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.events)))"
@@ -126,26 +125,31 @@ struct EventListView: View {
                             }
                         }
                         .padding()
-                    }
-                    List {
-                        if !viewStore.state.events.isEmpty {
-                            ForEach(viewStore.state.events) { event in
-                                EventListItemView(
-                                    title: "\(event.title)",
-                                    duration: "\(event.duration.formatted(.units()))"
-                                )
-                            }
-                            .onDelete { indices in
-                                viewStore.send(.deleteEvent(indices: indices))
-                            }
-                            Section {
-                                EventListItemView(
-                                    title: "Total",
-                                    duration: "\(totalDuration(of: viewStore.events).formatted(.units()))"
-                                )
+                        List {
+                            if !viewStore.state.events.isEmpty {
+                                ForEach(viewStore.state.events) { event in
+                                    EventListItemView(
+                                        title: "\(event.title)",
+                                        duration: "\(event.duration.formatted(.units()))"
+                                    )
+                                }
+                                .onDelete { indices in
+                                    viewStore.send(.deleteEvent(indices: indices))
+                                }
+                                Section {
+                                    EventListItemView(
+                                        title: "Total",
+                                        duration: "\(totalDuration(of: viewStore.events).formatted(.units()))"
+                                    )
+                                }
                             }
                         }
                     }
+                }
+                if viewStore.state.events.isEmpty {
+                    Spacer()
+                    EmptyEventListView()
+                    Spacer()
                 }
             }
         }

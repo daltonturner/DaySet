@@ -51,7 +51,7 @@ struct EventFormView: View {
                     TextField("Title", text: viewStore.$event.title)
                         .focused(self.$focus, equals: .title)
                     HStack {
-                        Slider(value: viewStore.$event.duration.minutes, in: 5...59, step: 1) {
+                        Slider(value: viewStore.$event.duration.minutes, in: 1...59, step: 1) {
                             Text("Length")
                         }
                         Spacer()
