@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
+// MARK: -
+
 struct ListHomeFeature: Reducer {
 
     struct State: Equatable {
@@ -57,6 +59,8 @@ struct ListHomeFeature: Reducer {
     }
 }
 
+// MARK: -
+
 struct ListHomeView: View {
     let store: StoreOf<ListHomeFeature>
 
@@ -90,6 +94,7 @@ struct ListHomeView: View {
                                         Button("Save") {
                                             viewStore.send(.saveListButtonTapped)
                                         }
+                                        .disabled(viewStore.addList?.eventList.name.isEmpty ?? true)
                                     }
                                     ToolbarItem(placement: .cancellationAction) {
                                         Button("Cancel") {

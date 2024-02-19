@@ -8,6 +8,8 @@
 import ComposableArchitecture
 import SwiftUI
 
+// MARK: -
+
 struct EventFormFeature: Reducer {
 
     struct State: Equatable {
@@ -40,6 +42,8 @@ struct EventFormFeature: Reducer {
     }
 }
 
+// MARK: -
+
 struct EventFormView: View {
     let store: StoreOf<EventFormFeature>
     @FocusState var focus: EventFormFeature.State.Field?
@@ -48,7 +52,7 @@ struct EventFormView: View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             Form {
                 Section {
-                    TextField("Title", text: viewStore.$event.title)
+                    TextField("Title", text: viewStore.$event.name)
                         .focused(self.$focus, equals: .title)
                     HStack {
                         Slider(value: viewStore.$event.duration.minutes, in: 1...59, step: 1) {
