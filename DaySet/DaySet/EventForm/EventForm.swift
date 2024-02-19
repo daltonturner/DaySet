@@ -18,6 +18,7 @@ struct EventFormFeature: Reducer {
 
         enum Field: Hashable {
             case title
+            case note
         }
 
         init(focus: Field? = .title, event: Event) {
@@ -54,15 +55,29 @@ struct EventFormView: View {
                 Section {
                     TextField("Title", text: viewStore.$event.name)
                         .focused(self.$focus, equals: .title)
-                    HStack {
-                        Slider(value: viewStore.$event.duration.minutes, in: 1...59, step: 1) {
+                    VStack {
+                        Slider(value: viewStore.$event.duration.minutes, in: 1...60, step: 1) {
                             Text("Length")
                         }
-                        Spacer()
                         Text(viewStore.event.duration.formatted(.units()))
+                            .font(.title3.weight(.semibold))
+                            .multilineTextAlignment(.center)
                     }
                 } header: {
                     Text("Event Info")
+                }
+                Section {
+                    Picker("Priority", selection: viewStore.$event.priority) {
+                        ForEach(Event.Priority.allCases, id: \.self) {
+                            Text($0.rawValue)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(4)
+                    TextField("Note", text: viewStore.$event.note)
+                        .focused(self.$focus, equals: .note)
+                } header: {
+                    Text("Additional Info")
                 }
             }
             .bind(viewStore.$focus, to: self.$focus)
