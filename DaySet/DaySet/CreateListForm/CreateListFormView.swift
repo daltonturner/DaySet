@@ -8,6 +8,8 @@
 import ComposableArchitecture
 import SwiftUI
 
+// MARK: -
+
 struct CreateListFormFeature: Reducer {
 
     struct State: Equatable {
@@ -30,6 +32,8 @@ struct CreateListFormFeature: Reducer {
         }
     }
 }
+
+// MARK: -
 
 struct CreateListFormView: View {
     let store: StoreOf<CreateListFormFeature>

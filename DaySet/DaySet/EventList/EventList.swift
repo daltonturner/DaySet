@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
+// MARK: -
+
 struct EventListFeature: Reducer {
 
     struct State: Equatable {
@@ -62,6 +64,8 @@ struct EventListFeature: Reducer {
     }
 }
 
+// MARK: -
+
 struct EventListView: View {
     let store: StoreOf<EventListFeature>
 
@@ -92,6 +96,7 @@ struct EventListView: View {
                                         Button("Save") {
                                             viewStore.send(.saveEventButtonTapped)
                                         }
+                                        .disabled(viewStore.addEvent?.event.name.isEmpty ?? true)
                                     }
                                     ToolbarItem(placement: .cancellationAction) {
                                         Button("Cancel") {
@@ -129,7 +134,7 @@ struct EventListView: View {
                             if !viewStore.state.events.isEmpty {
                                 ForEach(viewStore.state.events) { event in
                                     EventListItemView(
-                                        title: "\(event.title)",
+                                        title: "\(event.name)",
                                         duration: "\(event.duration.formatted(.units()))"
                                     )
                                 }
@@ -155,6 +160,8 @@ struct EventListView: View {
         }
     }
 }
+
+// MARK: -
 
 private extension EventListView {
     func totalDuration(of events: IdentifiedArrayOf<Event>) -> Duration {
@@ -189,6 +196,8 @@ private extension EventListView {
         return formatter.string(from: date)
     }
 }
+
+// MARK: -
 
 #Preview {
     MainActor.assumeIsolated {

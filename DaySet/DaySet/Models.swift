@@ -27,13 +27,13 @@ extension EventList {
 struct Event: Equatable, Identifiable, Codable {
     let id: UUID
     var duration = Duration.seconds(60)
-    var title = ""
+    var name = ""
 }
 
 extension Event {
     static let mock = Self(
         id: Event.ID(),
         duration: .seconds(60),
-        title: "Brush Teeth"
+        name: "Brush Teeth"
     )
 }
