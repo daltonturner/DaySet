@@ -35,20 +35,39 @@ struct AppFeature: Reducer {
         }
     }
 
+    @Dependency(\.continuousClock) var clock
+    @Dependency(\.dataManager.save) var saveData
+
     var body: some ReducerOf<Self> {
         Scope(state: \.listHome,action: /Action.listHome) {
             ListHomeFeature()
         }
         Reduce { state, action in
             switch action {
-            case .path(_):
+            case let .path(.element(id: _, action: .eventList(.delegate(action)))):
+                switch action {
+                case let .eventListUpdated(events):
+                    state.listHome.lists[id: events.id] = events
+                    return .none
+                }
+            case .path:
                 return .none
-            case .listHome(_):
+            case .listHome:
                 return .none
             }
         }
         .forEach(\.path, action: /Action.path) {
             Path()
+        }
+
+        Reduce { state, _ in
+            .run { [lists = state.listHome.lists] _ in
+                enum CancelID { case saveDebounce }
+                try await withTaskCancellation(id: CancelID.saveDebounce, cancelInFlight: true) {
+                    try await self.clock.sleep(for: .seconds(1))
+                    try self.saveData(JSONEncoder().encode(lists), .lists)
+                }
+            }
         }
     }
 }
@@ -79,15 +98,23 @@ struct AppView: View {
     }
 }
 
+extension URL {
+    static let lists = Self.documentsDirectory.appending(component: "lists.json")
+}
+
 #Preview {
     AppView(
         store: .init(
             initialState: AppFeature.State(
-                listHome: .init(lists: [.mock])
+                listHome: .init()
             )
         ) {
             AppFeature()
                 ._printChanges()
+        } withDependencies: {
+            $0.dataManager = .mock(
+                initialData: try? JSONEncoder().encode([EventList.mock])
+            )
         }
     )
 }

@@ -7,51 +7,93 @@
 
 import SwiftUI
 
+// From https://gist.github.com/peterfriese/bb2fc5df202f6a15cc807bd87ff15193
+
 extension Color: Codable {
-
-    // Encodes the Color instance to an Encoder.
-    public func encode(to encoder: Encoder) throws {
-        // Convert the Color to a UIColor (for iOS) or NSColor (for macOS), then to RGBA.
-        let uiColor = UIColor(self)
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-
-        // Encode the RGBA values.
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(red, forKey: .red)
-        try container.encode(green, forKey: .green)
-        try container.encode(blue, forKey: .blue)
-        try container.encode(alpha, forKey: .alpha)
-    }
-
-    // Decodes a Color instance from a Decoder.
-    public init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        let red = try values.decode(CGFloat.self, forKey: .red)
-        let green = try values.decode(CGFloat.self, forKey: .green)
-        let blue = try values.decode(CGFloat.self, forKey: .blue)
-        let alpha = try values.decode(CGFloat.self, forKey: .alpha)
+    init(hex: String) {
+        let rgba = hex.toRGBA()
         
-        // Initialize the Color using the decoded RGBA values.
-        self.init(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
+        self.init(.sRGB,
+                  red: Double(rgba.r),
+                  green: Double(rgba.g),
+                  blue: Double(rgba.b),
+                  opacity: Double(rgba.alpha))
     }
-
-    // Define the keys used for encoding/decoding.
-    enum CodingKeys: CodingKey {
-        case red, green, blue, alpha
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let hex = try container.decode(String.self)
+        
+        self.init(hex: hex)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(toHex)
+    }
+    
+    var toHex: String? {
+        return toHex()
+    }
+    
+    func toHex(alpha: Bool = false) -> String? {
+        guard let components = UIColor(self).cgColor.components, components.count >= 3 else {
+            return nil
+        }
+        
+        let r = Float(components[0])
+        let g = Float(components[1])
+        let b = Float(components[2])
+        var a = Float(1.0)
+        
+        if components.count >= 4 {
+            a = Float(components[3])
+        }
+        
+        if alpha {
+            return String(format: "%02lX%02lX%02lX%02lX",
+                          lroundf(r * 255),
+                          lroundf(g * 255),
+                          lroundf(b * 255),
+                          lroundf(a * 255))
+        }
+        else {
+            return String(format: "%02lX%02lX%02lX",
+                          lroundf(r * 255),
+                          lroundf(g * 255),
+                          lroundf(b * 255))
+        }
     }
 }
 
-// UIColor extension to convert Color to UIColor. This is needed for iOS.
-#if canImport(UIKit)
-import UIKit
-extension UIColor {
-    convenience init(_ color: Color) {
-        let cgColor = color.cgColor
-        self.init(cgColor: cgColor!)
+extension String {
+    func toRGBA() -> (r: CGFloat, g: CGFloat, b: CGFloat, alpha: CGFloat) {
+        var hexSanitized = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+        
+        var rgb: UInt64 = 0
+        
+        var r: CGFloat = 0.0
+        var g: CGFloat = 0.0
+        var b: CGFloat = 0.0
+        var a: CGFloat = 1.0
+        
+        let length = hexSanitized.count
+        
+        Scanner(string: hexSanitized).scanHexInt64(&rgb)
+        
+        if length == 6 {
+            r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+            g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+            b = CGFloat(rgb & 0x0000FF) / 255.0
+        }
+        else if length == 8 {
+            r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
+            g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
+            b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
+            a = CGFloat(rgb & 0x000000FF) / 255.0
+        }
+        
+        return (r, g, b, a)
     }
 }
-#endif

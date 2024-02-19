@@ -16,6 +16,20 @@ struct ListHomeFeature: Reducer {
     struct State: Equatable {
         @PresentationState var addList: CreateListFormFeature.State?
         var lists: IdentifiedArrayOf<EventList> = []
+
+        init(addList: CreateListFormFeature.State? = nil) {
+            self.addList = addList
+            do {
+                @Dependency(\.dataManager.load) var loadData
+                self.lists = try
+                JSONDecoder().decode(
+                    IdentifiedArrayOf<EventList>.self,
+                    from: loadData(.lists)
+                )
+            } catch {
+                self.lists = []
+            }
+        }
     }
 
     enum Action {
@@ -110,7 +124,7 @@ struct ListHomeView: View {
                     if !viewStore.state.lists.isEmpty {
                         ForEach(viewStore.state.lists) { list in
                             NavigationLink(
-                                state: AppFeature.Path.State.eventList(EventListFeature.State(events: list.events))
+                                state: AppFeature.Path.State.eventList(EventListFeature.State(eventList: list))
                             ) {
                                 HStack {
                                     ZStack {

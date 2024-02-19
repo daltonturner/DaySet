@@ -16,7 +16,7 @@ struct EventListFeature: Reducer {
     struct State: Equatable {
         @PresentationState var addEvent: EventFormFeature.State?
         @BindingState var arrivalTime: Date = .now
-        var events: IdentifiedArrayOf<Event> = []
+        var eventList: EventList
     }
 
     enum Action: BindableAction {
@@ -24,8 +24,13 @@ struct EventListFeature: Reducer {
         case addEvent(PresentationAction<EventFormFeature.Action>)
         case binding(BindingAction<State>)
         case cancelEventButtonTapped
+        case delegate(Delegate)
         case deleteEvent(indices: IndexSet)
         case saveEventButtonTapped
+
+        enum Delegate {
+            case eventListUpdated(EventList)
+        }
     }
 
     @Dependency(\.uuid) var uuid
@@ -48,18 +53,25 @@ struct EventListFeature: Reducer {
             case .cancelEventButtonTapped:
                 state.addEvent = nil
                 return .none
+            case .delegate:
+                return .none
             case .deleteEvent(let indices):
-                state.events.remove(atOffsets: indices)
+                state.eventList.events.remove(atOffsets: indices)
                 return .none
             case .saveEventButtonTapped:
                 guard let event = state.addEvent?.event else { return .none }
-                state.events.append(event)
+                state.eventList.events.append(event)
                 state.addEvent = nil
                 return .none
             }
         }
         .ifLet(\.$addEvent, action: /Action.addEvent) {
             EventFormFeature()
+        }
+        .onChange(of: \.eventList) { oldValue, newValue in
+            Reduce { state, action in
+                return .send(.delegate(.eventListUpdated(newValue)))
+            }
         }
     }
 }
@@ -107,7 +119,7 @@ struct EventListView: View {
                         }
                     }
                     .padding(.horizontal)
-                    if !viewStore.state.events.isEmpty {
+                    if !viewStore.state.eventList.events.isEmpty {
                         VStack(spacing: 18) {
                             DatePicker(
                                 "Time",
@@ -125,14 +137,14 @@ struct EventListView: View {
 
                                 TimeCardView(
                                     cardTitle: "Get ready",
-                                    cardTime: "\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.events)))"
+                                    cardTime: "\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.eventList.events)))"
                                 )
                             }
                         }
                         .padding()
                         List {
-                            if !viewStore.state.events.isEmpty {
-                                ForEach(viewStore.state.events) { event in
+                            if !viewStore.state.eventList.events.isEmpty {
+                                ForEach(viewStore.state.eventList.events) { event in
                                     EventListItemView(
                                         config: .init(
                                             duration: "\(event.duration.formatted(.units()))",
@@ -148,7 +160,7 @@ struct EventListView: View {
                                 Section {
                                     EventListItemView(
                                         config: .init(
-                                            duration: "\(totalDuration(of: viewStore.events).formatted(.units()))",
+                                            duration: "\(totalDuration(of: viewStore.eventList.events).formatted(.units()))",
                                             name: "Total"
                                         )
                                     )
@@ -157,7 +169,7 @@ struct EventListView: View {
                         }
                     }
                 }
-                if viewStore.state.events.isEmpty {
+                if viewStore.state.eventList.events.isEmpty {
                     Spacer()
                     EmptyEventListView()
                     Spacer()
@@ -212,7 +224,7 @@ private extension EventListView {
                 store: Store(
                     initialState: EventListFeature.State(
                         arrivalTime: .now,
-                        events: [.mock]
+                        eventList: .mock
                     )
                 ) {
                     EventListFeature()
