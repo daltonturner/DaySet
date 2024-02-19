@@ -19,7 +19,7 @@ struct EventListFeature: Reducer {
         var events: IdentifiedArrayOf<Event> = []
     }
 
-    enum Action : BindableAction {
+    enum Action: BindableAction {
         case addButtonTapped
         case addEvent(PresentationAction<EventFormFeature.Action>)
         case binding(BindingAction<State>)
@@ -134,8 +134,12 @@ struct EventListView: View {
                             if !viewStore.state.events.isEmpty {
                                 ForEach(viewStore.state.events) { event in
                                     EventListItemView(
-                                        title: "\(event.name)",
-                                        duration: "\(event.duration.formatted(.units()))"
+                                        config: .init(
+                                            duration: "\(event.duration.formatted(.units()))",
+                                            name: "\(event.name)",
+                                            note: "\(event.note)",
+                                            priority: event.priority
+                                        )
                                     )
                                 }
                                 .onDelete { indices in
@@ -143,8 +147,10 @@ struct EventListView: View {
                                 }
                                 Section {
                                     EventListItemView(
-                                        title: "Total",
-                                        duration: "\(totalDuration(of: viewStore.events).formatted(.units()))"
+                                        config: .init(
+                                            duration: "\(totalDuration(of: viewStore.events).formatted(.units()))",
+                                            name: "Total"
+                                        )
                                     )
                                 }
                             }
