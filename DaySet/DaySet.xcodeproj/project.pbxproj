@@ -30,6 +30,7 @@
 		258A7B052B1EE60E00932112 /* EventList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258A7B042B1EE60E00932112 /* EventList.swift */; };
 		258A7B072B1EE63100932112 /* EventForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258A7B062B1EE63100932112 /* EventForm.swift */; };
 		258A7B0A2B1EE65100932112 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 258A7B092B1EE65100932112 /* ComposableArchitecture */; };
+		25AE8A0C2B840C2600468111 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AE8A0B2B840C2600468111 /* DataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 		258A7B022B1EE5F300932112 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		258A7B042B1EE60E00932112 /* EventList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventList.swift; sourceTree = "<group>"; };
 		258A7B062B1EE63100932112 /* EventForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventForm.swift; sourceTree = "<group>"; };
+		25AE8A0B2B840C2600468111 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,16 +109,9 @@
 			isa = PBXGroup;
 			children = (
 				2524A4D42B56534A002FF02E /* Color+Codable.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		256477A12B282C3C00071921 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
 				256477A22B282C6F00071921 /* Duration+Extensions.swift */,
 			);
-			path = Helpers;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		258877B22B7B05B600B6B587 /* CreateListForm */ = {
@@ -182,14 +177,14 @@
 		258A7AD72B1EE5A300932112 /* DaySet */ = {
 			isa = PBXGroup;
 			children = (
+				25AE8A0A2B840C0B00468111 /* Dependencies */,
 				2540A74D2B5F7823008C985F /* App.swift */,
+				258A7ADC2B1EE5A300932112 /* Assets.xcassets */,
 				258A7AD82B1EE5A300932112 /* DaySetApp.swift */,
 				2524A4D32B565329002FF02E /* Extensions */,
 				258877B22B7B05B600B6B587 /* CreateListForm */,
 				258877BD2B7B261500B6B587 /* EventForm */,
 				258877BC2B7B260700B6B587 /* EventList */,
-				258A7ADC2B1EE5A300932112 /* Assets.xcassets */,
-				256477A12B282C3C00071921 /* Helpers */,
 				258911DB2B5786AF00E53017 /* ListHomeView.swift */,
 				258A7B022B1EE5F300932112 /* Models.swift */,
 				258A7ADE2B1EE5A300932112 /* Preview Content */,
@@ -220,6 +215,14 @@
 				258A7AF52B1EE5A400932112 /* DaySetUITestsLaunchTests.swift */,
 			);
 			path = DaySetUITests;
+			sourceTree = "<group>";
+		};
+		25AE8A0A2B840C0B00468111 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				25AE8A0B2B840C2600468111 /* DataManager.swift */,
+			);
+			path = Dependencies;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -365,6 +368,7 @@
 				258A7B072B1EE63100932112 /* EventForm.swift in Sources */,
 				258A7B032B1EE5F300932112 /* Models.swift in Sources */,
 				2524A4D22B564C7E002FF02E /* CreateListFormView.swift in Sources */,
+				25AE8A0C2B840C2600468111 /* DataManager.swift in Sources */,
 				256477A02B282B8B00071921 /* EventListItemView.swift in Sources */,
 				258877B92B7B060C00B6B587 /* ColorPickerView.swift in Sources */,
 				258877AD2B7354AF00B6B587 /* TimeCardView.swift in Sources */,
