@@ -84,134 +84,123 @@ struct EventListView: View {
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             VStack {
-                VStack(spacing: 16) {
-                    HStack {
-                        Spacer()
-                        Button {
-                            viewStore.send(.addButtonTapped)
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    }
-                    .sheet(
-                        store: self.store.scope(
-                            state: \.$addEvent,
-                            action: { .addEvent($0) }
-                        )
-                    ) { store in
-                        NavigationStack {
-                            EventFormView(store: store)
-                                .navigationTitle("New Event")
-                                .navigationBarTitleDisplayMode(.inline)
-                                .toolbar {
-                                    ToolbarItem {
-                                        Button("Save") {
-                                            viewStore.send(.saveEventButtonTapped)
-                                        }
-                                        .disabled(viewStore.addEvent?.event.name.isEmpty ?? true)
-                                    }
-                                    ToolbarItem(placement: .cancellationAction) {
-                                        Button("Cancel") {
-                                            viewStore.send(.cancelEventButtonTapped)
-                                        }
-                                    }
-                                }
-                        }
-                    }
-                    .padding(.horizontal)
-                    if !viewStore.state.eventList.events.isEmpty {
-                        VStack(spacing: 18) {
-                            DatePicker(
-                                "Time",
-                                selection: viewStore.$arrivalTime,
-                                displayedComponents: [.hourAndMinute]
-                            )
-                            .scaleEffect(1.25)
-                            .labelsHidden()
-
-                            HStack(spacing: 18) {
-                                TimeCardView(
-                                    cardTitle: "Arrive by",
-                                    cardTime: "\(formatTime(viewStore.arrivalTime))"
-                                )
-
-                                TimeCardView(
-                                    cardTitle: "Get ready",
-                                    cardTime: "\(formatTime(calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.eventList.events)))"
-                                )
-                            }
-                        }
-                        .padding()
-                        List {
-                            if !viewStore.state.eventList.events.isEmpty {
-                                ForEach(viewStore.state.eventList.events) { event in
-                                    EventListItemView(
-                                        config: .init(
-                                            duration: "\(event.duration.formatted(.units()))",
-                                            name: "\(event.name)",
-                                            note: "\(event.note)",
-                                            priority: event.priority
-                                        )
-                                    )
-                                }
-                                .onDelete { indices in
-                                    viewStore.send(.deleteEvent(indices: indices))
-                                }
-                                Section {
-                                    EventListItemView(
-                                        config: .init(
-                                            duration: "\(totalDuration(of: viewStore.eventList.events).formatted(.units()))",
-                                            name: "Total"
-                                        )
-                                    )
-                                }
-                            }
-                        }
+                if !viewStore.eventList.events.isEmpty {
+                    eventListSection(viewStore: viewStore)
+                } else {
+                    ContentUnavailableView {
+                        Label("Nothing here", systemImage: "list.bullet")
+                    } description: {
+                        Text("Add some events to get started")
                     }
                 }
-                if viewStore.state.eventList.events.isEmpty {
-                    Spacer()
-                    EmptyEventListView()
-                    Spacer()
+            }
+            .animation(.easeInOut)
+            .navigationTitle("\(viewStore.state.eventList.name)")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { viewStore.send(.addButtonTapped) }) {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(
+                store: self.store.scope(
+                    state: \.$addEvent,
+                    action: { .addEvent($0) }
+                )
+            ) { store in
+                NavigationStack {
+                    EventFormView(store: store)
+                        .navigationTitle("New Event")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem {
+                                Button("Save") {
+                                    viewStore.send(.saveEventButtonTapped)
+                                }
+                                .disabled(viewStore.addEvent?.event.name.isEmpty ?? true)
+                            }
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Cancel") {
+                                    viewStore.send(.cancelEventButtonTapped)
+                                }
+                            }
+                        }
                 }
             }
         }
     }
 }
 
-// MARK: -
-
-private extension EventListView {
-    func totalDuration(of events: IdentifiedArrayOf<Event>) -> Duration {
-        return events.reduce(Duration.seconds(0)) { total, event in
-            total + event.duration
+@MainActor @ViewBuilder
+private func eventListSection(
+    viewStore: ViewStore<EventListFeature.State, EventListFeature.Action>
+) -> some View {
+    EventListHeaderView(
+        arrivalTime: "\(TimeFormatter.formatTime(viewStore.arrivalTime))",
+        arrivalTimeBinding: viewStore.$arrivalTime,
+        getReadyTime: "\(TimeFormatter.formatTime(TimeFormatter.calculatePrepareByTime(arrivalTime: viewStore.arrivalTime, events: viewStore.eventList.events)))"
+    )
+    .padding()
+    List {
+        Section {
+            ForEach(viewStore.state.eventList.events) { event in
+                EventListItemView(
+                    config: .init(
+                        duration: "\(event.duration.formatted(.units()))",
+                        name: "\(event.name)",
+                        note: "\(event.note)",
+                        priority: event.priority
+                    )
+                )
+            }
+            .onDelete { indices in
+                viewStore.send(.deleteEvent(indices: indices))
+            }
+        } header: {
+            Text("Tasks")
+        }
+        .headerProminence(.increased)
+        Section {
+            EventListItemView(
+                config: .init(
+                    duration: "\(TimeFormatter.totalDuration(of: viewStore.eventList.events).formatted(.units()))",
+                    name: "Total"
+                )
+            )
         }
     }
+}
 
-    func formatDuration(_ duration: Duration) -> String {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute]
-        formatter.unitsStyle = .abbreviated
-        return formatter.string(from: DateComponents(second: Int(duration.seconds))) ?? ""
-    }
+// MARK: -
 
-    func calculatePrepareByTime(
-        arrivalTime: Date,
-        events: IdentifiedArrayOf<Event>
-    ) -> Date {
-        let totalDurationInSeconds = totalDuration(of: events).seconds
-        let prepareByTime = Calendar.current.date(
-            byAdding: .second,
-            value: -Int(totalDurationInSeconds),
-            to: arrivalTime
-        )
-        return prepareByTime ?? arrivalTime
-    }
+struct EventListHeaderView: View {
 
-    func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+    let arrivalTime: String
+    let arrivalTimeBinding: Binding<Date>
+    let getReadyTime: String
+
+    var body: some View {
+        VStack(spacing: 18) {
+            DatePicker(
+                "Time",
+                selection: arrivalTimeBinding,
+                displayedComponents: [.hourAndMinute]
+            )
+            .scaleEffect(1.25)
+            .labelsHidden()
+            HStack(spacing: 18) {
+                TimeCardView(
+                    cardTitle: "Arrive by",
+                    cardTime: arrivalTime
+                )
+                TimeCardView(
+                    cardTitle: "Get ready",
+                    cardTime: getReadyTime
+                )
+            }
+        }
     }
 }
 

@@ -12,8 +12,9 @@
 		2540A74E2B5F7823008C985F /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2540A74D2B5F7823008C985F /* App.swift */; };
 		256477A02B282B8B00071921 /* EventListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2564779F2B282B8B00071921 /* EventListItemView.swift */; };
 		256477A32B282C6F00071921 /* Duration+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256477A22B282C6F00071921 /* Duration+Extensions.swift */; };
+		2580CE132B8D9EFB00DB3B9D /* TimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2580CE122B8D9EFB00DB3B9D /* TimeFormatter.swift */; };
+		2580CE162B8DA89300DB3B9D /* ListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2580CE152B8DA89300DB3B9D /* ListItemView.swift */; };
 		258877AD2B7354AF00B6B587 /* TimeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258877AC2B7354AF00B6B587 /* TimeCardView.swift */; };
-		258877AF2B7362C500B6B587 /* EmptyEventListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258877AE2B7362C500B6B587 /* EmptyEventListView.swift */; };
 		258877B12B7B059200B6B587 /* IconPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258877B02B7B059200B6B587 /* IconPickerView.swift */; };
 		258877B52B7B05E600B6B587 /* ColorPickerOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258877B42B7B05E600B6B587 /* ColorPickerOptions.swift */; };
 		258877B72B7B05F000B6B587 /* IconPickerOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258877B62B7B05F000B6B587 /* IconPickerOptions.swift */; };
@@ -56,8 +57,9 @@
 		2540A74D2B5F7823008C985F /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		2564779F2B282B8B00071921 /* EventListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListItemView.swift; sourceTree = "<group>"; };
 		256477A22B282C6F00071921 /* Duration+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Duration+Extensions.swift"; sourceTree = "<group>"; };
+		2580CE122B8D9EFB00DB3B9D /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
+		2580CE152B8DA89300DB3B9D /* ListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItemView.swift; sourceTree = "<group>"; };
 		258877AC2B7354AF00B6B587 /* TimeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeCardView.swift; sourceTree = "<group>"; };
-		258877AE2B7362C500B6B587 /* EmptyEventListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyEventListView.swift; sourceTree = "<group>"; };
 		258877B02B7B059200B6B587 /* IconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconPickerView.swift; sourceTree = "<group>"; };
 		258877B42B7B05E600B6B587 /* ColorPickerOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerOptions.swift; sourceTree = "<group>"; };
 		258877B62B7B05F000B6B587 /* IconPickerOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconPickerOptions.swift; sourceTree = "<group>"; };
@@ -114,6 +116,23 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		2580CE112B8D9EEA00DB3B9D /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				2580CE122B8D9EFB00DB3B9D /* TimeFormatter.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		2580CE142B8DA87200DB3B9D /* ListHome */ = {
+			isa = PBXGroup;
+			children = (
+				258911DB2B5786AF00E53017 /* ListHomeView.swift */,
+				2580CE152B8DA89300DB3B9D /* ListItemView.swift */,
+			);
+			path = ListHome;
+			sourceTree = "<group>";
+		};
 		258877B22B7B05B600B6B587 /* CreateListForm */ = {
 			isa = PBXGroup;
 			children = (
@@ -138,7 +157,7 @@
 		258877BC2B7B260700B6B587 /* EventList */ = {
 			isa = PBXGroup;
 			children = (
-				258877AE2B7362C500B6B587 /* EmptyEventListView.swift */,
+				2580CE112B8D9EEA00DB3B9D /* Helpers */,
 				258A7B042B1EE60E00932112 /* EventList.swift */,
 				2564779F2B282B8B00071921 /* EventListItemView.swift */,
 				258877AC2B7354AF00B6B587 /* TimeCardView.swift */,
@@ -177,17 +196,17 @@
 		258A7AD72B1EE5A300932112 /* DaySet */ = {
 			isa = PBXGroup;
 			children = (
-				25AE8A0A2B840C0B00468111 /* Dependencies */,
 				2540A74D2B5F7823008C985F /* App.swift */,
 				258A7ADC2B1EE5A300932112 /* Assets.xcassets */,
 				258A7AD82B1EE5A300932112 /* DaySetApp.swift */,
+				25AE8A0A2B840C0B00468111 /* Dependencies */,
 				2524A4D32B565329002FF02E /* Extensions */,
 				258877B22B7B05B600B6B587 /* CreateListForm */,
 				258877BD2B7B261500B6B587 /* EventForm */,
 				258877BC2B7B260700B6B587 /* EventList */,
-				258911DB2B5786AF00E53017 /* ListHomeView.swift */,
 				258A7B022B1EE5F300932112 /* Models.swift */,
 				258A7ADE2B1EE5A300932112 /* Preview Content */,
+				2580CE142B8DA87200DB3B9D /* ListHome */,
 			);
 			path = DaySet;
 			sourceTree = "<group>";
@@ -362,6 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				258A7B052B1EE60E00932112 /* EventList.swift in Sources */,
+				2580CE132B8D9EFB00DB3B9D /* TimeFormatter.swift in Sources */,
 				256477A32B282C6F00071921 /* Duration+Extensions.swift in Sources */,
 				258911DC2B5786AF00E53017 /* ListHomeView.swift in Sources */,
 				2540A74E2B5F7823008C985F /* App.swift in Sources */,
@@ -370,6 +390,7 @@
 				2524A4D22B564C7E002FF02E /* CreateListFormView.swift in Sources */,
 				25AE8A0C2B840C2600468111 /* DataManager.swift in Sources */,
 				256477A02B282B8B00071921 /* EventListItemView.swift in Sources */,
+				2580CE162B8DA89300DB3B9D /* ListItemView.swift in Sources */,
 				258877B92B7B060C00B6B587 /* ColorPickerView.swift in Sources */,
 				258877AD2B7354AF00B6B587 /* TimeCardView.swift in Sources */,
 				258877B52B7B05E600B6B587 /* ColorPickerOptions.swift in Sources */,
@@ -377,7 +398,6 @@
 				258877BB2B7B103400B6B587 /* TileView.swift in Sources */,
 				258877B72B7B05F000B6B587 /* IconPickerOptions.swift in Sources */,
 				258A7AD92B1EE5A300932112 /* DaySetApp.swift in Sources */,
-				258877AF2B7362C500B6B587 /* EmptyEventListView.swift in Sources */,
 				258877B12B7B059200B6B587 /* IconPickerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
