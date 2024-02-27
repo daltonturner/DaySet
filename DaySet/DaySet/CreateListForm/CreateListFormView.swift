@@ -44,9 +44,9 @@ struct CreateListFormView: View {
                 VStack(spacing: 12) {
                     TileView {
                         ZStack {
-                            Circle()
+                            RoundedRectangle(cornerRadius: 8, style: .circular)
                                 .fill(viewStore.$eventList.color.wrappedValue)
-                                .frame(height: 96)
+                                .frame(width: 96, height: 96)
                                 .padding()
                             Image(systemName: viewStore.$eventList.icon.wrappedValue)
                                 .resizable()
