@@ -70,6 +70,7 @@ struct EventInfoView: View {
             Spacer()
             Text(duration)
         }
+        .contentShape(Rectangle())
     }
 }
 

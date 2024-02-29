@@ -17,6 +17,7 @@ struct EventListFeature: Reducer {
         @PresentationState var addEvent: EventFormFeature.State?
         @BindingState var arrivalTime: Date = .now
         var eventList: EventList
+        @PresentationState var editEvent: EventFormFeature.State?
     }
 
     enum Action: BindableAction {
@@ -26,6 +27,10 @@ struct EventListFeature: Reducer {
         case cancelEventButtonTapped
         case delegate(Delegate)
         case deleteEvent(indices: IndexSet)
+        case eventTapped(UUID)
+        case editCancelEventButtonTapped
+        case editEvent(PresentationAction<EventFormFeature.Action>)
+        case editSaveEventButtonTapped
         case saveEventButtonTapped
 
         enum Delegate {
@@ -55,8 +60,23 @@ struct EventListFeature: Reducer {
                 return .none
             case .delegate:
                 return .none
-            case .deleteEvent(let indices):
+            case let .deleteEvent(indices):
                 state.eventList.events.remove(atOffsets: indices)
+                return .none
+            case .editCancelEventButtonTapped:
+                state.editEvent = nil
+                return .none
+            case .editEvent:
+                return .none
+            case .editSaveEventButtonTapped:
+                guard let editedEvent = state.editEvent?.event else { return .none }
+                state.eventList.events[id: editedEvent.id] = editedEvent
+                state.editEvent = nil
+                return .none
+            case let .eventTapped(id):
+                if let event = state.eventList.events[id: id] {
+                    state.editEvent = EventFormFeature.State(event: event)
+                }
                 return .none
             case .saveEventButtonTapped:
                 guard let event = state.addEvent?.event else { return .none }
@@ -66,6 +86,9 @@ struct EventListFeature: Reducer {
             }
         }
         .ifLet(\.$addEvent, action: /Action.addEvent) {
+            EventFormFeature()
+        }
+        .ifLet(\.$editEvent, action: /Action.editEvent) {
             EventFormFeature()
         }
         .onChange(of: \.eventList) { oldValue, newValue in
@@ -129,6 +152,31 @@ struct EventListView: View {
                         }
                 }
             }
+            .sheet(
+                store: self.store.scope(
+                    state: \.$editEvent,
+                    action: { .editEvent($0) }
+                )
+            ) { store in
+                NavigationStack {
+                    EventFormView(store: store)
+                        .navigationTitle("Edit Event")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem {
+                                Button("Save") {
+                                    viewStore.send(.editSaveEventButtonTapped)
+                                }
+                                .disabled(viewStore.editEvent?.event.name.isEmpty ?? true)
+                            }
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Cancel") {
+                                    viewStore.send(.editCancelEventButtonTapped)
+                                }
+                            }
+                        }
+                }
+            }
         }
     }
 }
@@ -154,6 +202,9 @@ private func eventListSection(
                         priority: event.priority
                     )
                 )
+                .onTapGesture {
+                    viewStore.send(.eventTapped(event.id))
+                }
             }
             .onDelete { indices in
                 viewStore.send(.deleteEvent(indices: indices))
